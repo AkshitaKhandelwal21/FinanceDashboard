@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from .forms import ExpenseForm, IncomeForm
 
 
 def index(request):
@@ -49,3 +50,34 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'You have successfully logged out.')
     return redirect('login')
+
+
+# Add Expense View
+@login_required
+def add_expense(request):
+    if request.method == 'POST':
+        form = ExpenseForm(request.POST)
+        if form.is_valid():
+            expense = form.save(commit=False)
+            expense.user = request.user
+            expense.save()
+            messages.success(request, 'Expense added successfully!')
+            return redirect('dashboard')  
+    else:
+        form = ExpenseForm()
+    return render(request, 'expense.html', {'form': form})
+
+# Add Income View
+@login_required
+def add_income(request):
+    if request.method == 'POST':
+        form = IncomeForm(request.POST)
+        if form.is_valid():
+            income = form.save(commit=False)
+            income.user = request.user
+            income.save()
+            messages.success(request, 'Income added successfully!')
+            return redirect('dashboard')
+    else:
+        form = IncomeForm()
+    return render(request, 'income.html', {'form': form})
