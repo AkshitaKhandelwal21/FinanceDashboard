@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import ExpenseForm, IncomeForm
+from .forms import ExpenseForm, IncomeForm, BudgetForm
+from .models import Budget
 
 
 def index(request):
@@ -20,6 +21,7 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
+
 
 # Login View
 def login_view(request):
@@ -41,9 +43,11 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
+
 @login_required
 def dashboard(request):
     return render(request, 'dashboard.html')
+
 
 # Logout View
 def logout_view(request):
@@ -59,12 +63,14 @@ def add_expense(request):
         form = ExpenseForm(request.POST)
         if form.is_valid():
             expense = form.save(commit=False)
+            print(f'Current logged-in user: {request.user}')  # Check who is the logged-in user
             expense.user = request.user
             expense.save()
             messages.success(request, 'Expense added successfully!')
-            return redirect('dashboard')  
+            return redirect('dashboard')    
     else:
         form = ExpenseForm()
+        print(f'Current logged-in user: {request.user}')
     return render(request, 'expense.html', {'form': form})
 
 # Add Income View
@@ -81,3 +87,32 @@ def add_income(request):
     else:
         form = IncomeForm()
     return render(request, 'income.html', {'form': form})
+
+
+@login_required
+def add_budget(request):
+    if request.method == 'POST':
+        form = BudgetForm(request.POST)
+        if form.is_valid():
+            budget = form.save(commit=False)
+            budget.user = request.user  # Assign the logged-in user to the budget
+            budget.save()
+            messages.success(request, 'Budget set successfully!')
+            return redirect('dashboard')  # Redirect to dashboard or budget page
+    else:
+        form = BudgetForm()
+    return render(request, 'users/add_budget.html', {'form': form})
+
+
+@login_required
+def edit_budget(request, budget_id):
+    budget = Budget.objects.get(id=budget_id, user=request.user)  # Ensure only the logged-in user can edit their budget
+    if request.method == 'POST':
+        form = BudgetForm(request.POST, instance=budget)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Budget updated successfully!')
+            return redirect('dashboard')
+    else:
+        form = BudgetForm(instance=budget)
+    return render(request, 'users/edit_budget.html', {'form': form})
