@@ -1,5 +1,5 @@
 from django import forms
-from .models import Expense, Income, Budget
+from .models import Expense, Income
 
 class ExpenseForm(forms.ModelForm):
     class Meta:
@@ -11,11 +11,11 @@ class IncomeForm(forms.ModelForm):
         model = Income
         fields = ['amount', 'category', 'date', 'description']
 
-class BudgetForm(forms.ModelForm):
-    class Meta:
-        model = Budget
-        fields = ['amount', 'category', 'month', 'year']
-        widgets = {
-            'month': forms.NumberInput(attrs={'min': 1, 'max': 12}),
-            'year': forms.NumberInput(attrs={'min': timezone.now().year}),
-        }
+# class BudgetForm(forms.ModelForm):
+#     class Meta:
+#         model = Budget
+#         fields = ['amount', 'category', 'month', 'year']
+#         widgets = {
+#             'month': forms.NumberInput(attrs={'min': 1, 'max': 12}),
+#             'year': forms.NumberInput(attrs={'min': timezone.now().year}),
+#         }

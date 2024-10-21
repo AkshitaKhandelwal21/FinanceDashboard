@@ -1,0 +1,17 @@
+<h2>Budget Overview</h2>
+<table>
+    <tr>
+        <th>Category</th>
+        <th>Budgeted</th>
+        <th>Spent</th>
+        <th>Remaining</th>
+    </tr>
+    {% for category, summary in expense_summary.items %}
+    <tr>
+        <td>{{ category }}</td>
+        <td>{{ summary.budgeted }}</td>
+        <td>{{ summary.spent }}</td>
+        <td>{{ summary.remaining }}</td>
+    </tr>
+    {% endfor %}
+</table>
