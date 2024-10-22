@@ -1,4 +1,4 @@
-<h2>Budget Overview</h2>
+<!-- <h2>Budget Overview</h2>
 <table>
     <tr>
         <th>Category</th>
@@ -14,4 +14,32 @@
         <td>{{ summary.remaining }}</td>
     </tr>
     {% endfor %}
+</table> -->
+
+
+
+<h2>Budget Overview</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Budgeted</th>
+            <th>Adjusted</th>
+            <th>Spent</th>
+            <th>Remaining</th>
+            <th>Threshold</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in budget_data %}
+        <tr>
+            <td>{{ data.category }}</td>
+            <td>{{ data.budgeted }}</td>
+            <td>{{ data.adjusted }}</td>
+            <td>{{ data.spent }}</td>
+            <td>{{ data.remaining }}</td>
+            <td>{{ data.notification_threshold }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 
 # Category choices for income and expenses
 EXPENSE_CATEGORIES = [
@@ -26,10 +28,12 @@ class Expense(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=50, choices=EXPENSE_CATEGORIES)
     date = models.DateField()
+    month = models.IntegerField()
+    year = models.IntegerField() 
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f'{self.user.username} - {self.category} - {self.amount}'
+        return f'{self.user.username} - {self.category} - {self.amount} on {self.date}'
 
 # Income Model
 class Income(models.Model):
@@ -41,4 +45,7 @@ class Income(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.category} - {self.amount}'
+
+
+
 
