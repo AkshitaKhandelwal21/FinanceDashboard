@@ -6,7 +6,12 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from .forms import ExpenseForm, IncomeForm, BudgetForm
-from .models import Budget
+from .models import Budget, Income, Expense
+import plotly.graph_objs as go
+from plotly.subplots import make_subplots
+from plotly.offline import plot
+from datetime import datetime
+
 
 def index(request):
     return render(request, 'index.html')
@@ -47,7 +52,58 @@ def login_view(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    income_data = Income.objects.values('date').annotate(total_income=Sum('amount'))
+    expense_data = Expense.objects.values('date').annotate(total_expense=Sum('amount'))
+
+    income_dates = [entry['date'] for entry in income_data]
+    income_values = [entry['total_income'] for entry in income_data]
+
+    expense_dates = [entry['date'] for entry in expense_data]
+    expense_values = [entry['total_expense'] for entry in expense_data]
+
+    # Create Plotly line chart
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=income_dates, y=income_values, mode='lines+markers', name='Income'))
+    fig.add_trace(go.Scatter(x=expense_dates, y=expense_values, mode='lines+markers', name='Expenses'))
+
+    fig.update_layout(title='Income and Expenses Over Time', xaxis_title='Date', yaxis_title='Amount')
+    chart1 = plot(fig, output_type='div')
+
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    budgets = Budget.objects.filter(month=current_month, year=current_year).values('category').annotate(total_budget=Sum('amount'))
+    expenses = Expense.objects.filter(date__month=current_month, date__year=current_year).values('category').annotate(total_expense=Sum('amount'))
+
+    categories = [entry['category'] for entry in budgets]
+    budget_values = [entry['total_budget'] for entry in budgets]
+    expense_values = [entry['total_expense'] for entry in expenses if entry['category'] in categories]
+
+    # Create Plotly bar chart
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=categories, y=budget_values, name='Budgeted'))
+    fig.add_trace(go.Bar(x=categories, y=expense_values, name='Actual'))
+
+    fig.update_layout(barmode='group', title='Budget vs. Actual Expenses', xaxis_title='Category', yaxis_title='Amount')
+    chart2 = plot(fig, output_type='div')
+
+
+    expense_data = Expense.objects.values('category').annotate(total_amount=Sum('amount'))
+
+    categories = [entry['category'] for entry in expense_data]
+    amounts = [entry['total_amount'] for entry in expense_data]
+
+    # Create Plotly pie chart
+    fig = go.Figure(data=[go.Pie(labels=categories, values=amounts)])
+    fig.update_layout(title='Spending by Category')
+    chart3 = plot(fig, output_type='div')
+
+    charts = {
+        'chart1': chart1,
+        'chart2': chart2,
+        'chart3': chart3
+    }
+    return render(request, 'dashboard.html', charts)
 
 
 # Logout View
@@ -64,7 +120,7 @@ def add_expense(request):
         form = ExpenseForm(request.POST)
         if form.is_valid():
             expense = form.save(commit=False)
-            print(f'Current logged-in user: {request.user}')  # Check who is the logged-in user
+            print(f'Current logged-in user: {request.user}')
             expense.user = request.user
             expense.save()
             messages.success(request, 'Expense added successfully!')
@@ -127,7 +183,7 @@ def budget_dashboard(request):
 
     for budget in budgets:
         total_spent = budget.get_total_expenses()  # Get total expenses for the category
-        remaining = budget.remaining_amount()  # Get remaining budget
+        remaining = budget.remaining_amount()
         
         # Check if spending exceeds the threshold
         alert = False
@@ -143,3 +199,7 @@ def budget_dashboard(request):
         })
 
     return render(request, 'budget_overview.html', {'budget_data': budget_data})
+
+
+
+

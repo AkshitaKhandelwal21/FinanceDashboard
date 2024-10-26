@@ -11,4 +11,4 @@ urlpatterns = [
     path('addbudget/', views.add_budget, name='add_budget'),
     path('editbudget/', views.edit_budget, name='edit_budget'),
     path('track/', views.budget_dashboard, name='budget_dashboard')
-]   
+]

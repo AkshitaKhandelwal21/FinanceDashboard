@@ -1,11 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>Document</title>
 </head>
+
 <body>
     <h1>User Dashboard</h1>
+    <div>
+        {{ chart1|safe }}
+        {{ chart2|safe }}
+        {{ chart3|safe }}
+    </div>
 </body>
+
 </html>

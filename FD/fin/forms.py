@@ -12,7 +12,6 @@ class IncomeForm(forms.ModelForm):
         model = Income
         fields = ['amount', 'category', 'date', 'description']
 
-
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
