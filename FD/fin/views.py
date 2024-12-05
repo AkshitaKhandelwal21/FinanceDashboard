@@ -146,7 +146,7 @@ def add_income(request):
         form = IncomeForm()
     return render(request, 'income.html', {'form': form})
 
-
+ 
 @login_required
 def add_budget(request):
     if request.method == 'POST':
@@ -182,7 +182,7 @@ def budget_dashboard(request):
     budget_data = []
 
     for budget in budgets:
-        total_spent = budget.get_total_expenses()  # Get total expenses for the category
+        total_spent = budget.get_total_expenses()
         remaining = budget.remaining_amount()
         
         # Check if spending exceeds the threshold
