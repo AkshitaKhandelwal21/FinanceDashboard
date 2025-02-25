@@ -6,3 +6,4 @@ userRouter = APIRouter()
 @userRouter.post('/register')
 def register(user: Registration):
     return {"user": user}
+    
