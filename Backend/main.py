@@ -1,10 +1,10 @@
 from fastapi import FastAPI
-# from config.db import *
-import config.db
+from sqlmodel import SQLModel
+from config.db import create_db_and_tables
 
-print("Hello world")
 app = FastAPI()
 
+create_db_and_tables()
 
 from routes.home import router1
 from routes.register import userRouter
