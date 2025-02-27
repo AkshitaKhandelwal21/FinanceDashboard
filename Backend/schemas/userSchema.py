@@ -15,12 +15,27 @@ class ReadUser(SQLModel):
     id: int
     name: str
     email: EmailStr
+    phone: str
+    dob: date
+    role: str
+    income: float
+    goal: str
+    savings: Optional[float] = Field(default=None)
 
     class Config:
         from_attributes = True
 
 class AddDetails(SQLModel):
     id: int
+    role: str
+    income: float
+    goal: str
+    savings: Optional[float] = Field(default=None)
+
+class UpdateUser(SQLModel):
+    id: int
+    name: str
+    phone: str
     role: str
     income: float
     goal: str
