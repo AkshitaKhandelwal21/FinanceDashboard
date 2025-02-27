@@ -4,9 +4,6 @@ from models.userModel import Registration
 from fastapi import Depends
 from typing import Annotated
 
-
-DATABASE_URI = "mysql+mysqldb://root:AKSHITA@localhost/user"
-
 engine = create_engine(DATABASE_URI)
 
 def create_db_and_tables():
